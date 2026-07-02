@@ -43,6 +43,20 @@ deliberately avoiding the dated pink nail-salon template. Type pairing: Fraunces
   Tasteful CSS/SVG placeholders are used and marked `IMG-NEEDED`. See
   [`assets/photos/DROP-PHOTOS-HERE.md`](assets/photos/DROP-PHOTOS-HERE.md) to add real ones.
 
+## SEO
+
+On-page SEO is wired for local search: unique `<title>` + meta description, a single `<h1>`,
+JSON-LD structured data (`@type` **BeautySalon**, `additionalType` NailSalon) with the salon's real
+name, phone, address, opening hours, and Facebook `sameAs`, plus complete Open Graph + Twitter Card
+tags, a `robots.txt`, and a `sitemap.xml`.
+
+**Base URL placeholder:** the canonical link, `og:url`, `og:image`/`twitter:image`, `sitemap.xml`,
+`robots.txt`, and the JSON-LD `url`/`image` all use the literal placeholder
+`https://REPLACE-WITH-DOMAIN.com/`. At deploy time, do a one-line find-replace of that string with the
+real domain across `index.html`, `robots.txt`, and `sitemap.xml`. The referenced share image
+(`/assets/og-image.jpg`) is not committed yet — add a real 1200×630 image there before relying on
+social previews.
+
 ## View it
 
 Open `index.html` in any browser — no server needed.
