@@ -52,7 +52,7 @@ tags, a `robots.txt`, and a `sitemap.xml`.
 
 **Base URL placeholder:** the canonical link, `og:url`, `og:image`/`twitter:image`, `sitemap.xml`,
 `robots.txt`, and the JSON-LD `url`/`image` all use the literal placeholder
-`https://REPLACE-WITH-DOMAIN.com/`. At deploy time, do a one-line find-replace of that string with the
+`https://hydronails.com/`. At deploy time, do a one-line find-replace of that string with the
 real domain across `index.html`, `robots.txt`, and `sitemap.xml`. The referenced share image
 (`/assets/og-image.jpg`) is not committed yet — add a real 1200×630 image there before relying on
 social previews.
