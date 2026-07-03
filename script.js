@@ -29,6 +29,7 @@
   var toggle = document.querySelector(".nav-toggle");
   var menu = document.getElementById("navmenu");
   var drawer = document.getElementById("navDrawer");
+  var closeBtn = menu ? menu.querySelector(".nav-close") : null;
   if (toggle && menu && drawer) {
     var DESKTOP_BP = 720; // must match the CSS breakpoint
     var isOpen = false;
@@ -67,6 +68,9 @@
       if ("inert" in HTMLElement.prototype) { drawer.inert = hidden; }
       if (hidden) { drawer.setAttribute("aria-hidden", "true"); }
       else { drawer.removeAttribute("aria-hidden"); }
+      // The in-panel close (X) is only a real control inside the open mobile
+      // drawer. Keep it out of the tab order everywhere else (closed / desktop).
+      if (closeBtn) { closeBtn.tabIndex = (isMobile() && isOpen) ? 0 : -1; }
     };
 
     // Mark everything except the drawer inert while the drawer is open.

@@ -120,6 +120,10 @@ img { max-width: 100%; display: block; }
 .nav-cta { background: var(--teal-800); color: #fff !important; padding: .55rem 1.1rem !important; }
 .nav-cta:hover { background: var(--teal-900); }
 
+/* In-panel close (X) — hidden on desktop where the nav is inline; shown only
+   inside the mobile off-canvas drawer (see <=720px block below). */
+.nav-close-li { display: none; }
+
 .nav-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: 0; cursor: pointer; padding: 8px;
   -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 .nav-toggle .bar { width: 24px; height: 2px; background: var(--teal-800); border-radius: 2px; transition: transform .3s var(--ease), opacity .3s; }
@@ -354,6 +358,16 @@ img { max-width: 100%; display: block; }
     overflow-y: auto; -webkit-overflow-scrolling: touch;
     -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
   .nav-open .nav-menu { transform: none; }
+
+  /* Always-tappable close inside the panel. The panel is the top-most paint
+     layer, so a control inside it is always hit-testable (unlike the header
+     toggle, which the panel paints over). */
+  .nav-close-li { display: block; position: absolute; top: .9rem; right: 1rem; z-index: 1; margin: 0; }
+  .nav-close { display: flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; padding: 0; border: 0; border-radius: 999px;
+    background: transparent; color: var(--teal-800); cursor: pointer;
+    -webkit-tap-highlight-color: transparent; transition: background .25s, color .25s; }
+  .nav-close:hover, .nav-close:active { background: rgba(169,216,213,.3); color: var(--teal-900); }
 
   .nav-menu a { display: block; padding: .85rem 1.1rem; border-radius: 10px; font-size: 1.05rem; }
   .nav-menu a:not(.nav-cta):hover,
