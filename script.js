@@ -30,15 +30,27 @@
   var menu = document.getElementById("navmenu");
   var drawer = document.getElementById("navDrawer");
   if (toggle && menu && drawer) {
-    // The header uses backdrop-filter, which makes it the containing block for
-    // any fixed descendant. Move the drawer to <body> so inset:0 resolves to the
-    // full viewport (correct height, no bottom gap).
-    document.body.appendChild(drawer);
-
     var DESKTOP_BP = 720; // must match the CSS breakpoint
     var isOpen = false;
 
     var isMobile = function () { return window.innerWidth <= DESKTOP_BP; };
+
+    // The header uses backdrop-filter, which makes it the containing block for
+    // any fixed descendant. On MOBILE the drawer is a fixed off-canvas panel,
+    // so it must live on <body> for inset:0 to resolve to the full viewport.
+    // On DESKTOP the same element is just the inline header nav, so it has to
+    // stay in its original place inside the header. Remember that home slot and
+    // re-home the drawer whenever we cross the breakpoint.
+    var drawerHome = drawer.parentNode;
+    var drawerAnchor = drawer.nextSibling; // sibling to insert before on restore
+    var placeDrawer = function () {
+      if (isMobile()) {
+        if (drawer.parentNode !== document.body) document.body.appendChild(drawer);
+      } else if (drawer.parentNode !== drawerHome) {
+        drawerHome.insertBefore(drawer, drawerAnchor);
+      }
+    };
+    placeDrawer();
 
     var focusables = function () {
       return Array.prototype.filter.call(
@@ -48,8 +60,10 @@
     };
 
     // Keep the closed drawer's off-canvas links out of the tab order + AT.
+    // On desktop the drawer is just an inline nav container, so it must stay
+    // fully interactive (never inert / aria-hidden).
     var syncInert = function () {
-      var hidden = !isOpen;
+      var hidden = isMobile() && !isOpen;
       if ("inert" in HTMLElement.prototype) { drawer.inert = hidden; }
       if (hidden) { drawer.setAttribute("aria-hidden", "true"); }
       else { drawer.removeAttribute("aria-hidden"); }
@@ -123,6 +137,9 @@
       if (m === wasMobile) return;
       wasMobile = m;
       if (!m && isOpen) { setOpen(false); }
+      // Re-home the drawer: <body> for the mobile off-canvas panel, back into
+      // the header for the desktop inline nav.
+      placeDrawer();
       // At desktop widths the drawer isn't used; keep its links out of tab order.
       if (!m) { isOpen = false; syncInert(); }
       else { syncInert(); }

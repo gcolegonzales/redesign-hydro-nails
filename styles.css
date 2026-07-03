@@ -315,13 +315,19 @@ img { max-width: 100%; display: block; }
   .footer-inner { grid-template-columns: 1fr 1fr; }
 }
 
-/* ---------- Mobile drawer (default: inert on desktop) ---------- */
-/* Clip wrapper: fixed full-viewport, overflow hidden so the off-canvas
-   panel can NEVER widen the page or create a bottom gap. */
-.nav-drawer { display: none; }
-.nav-scrim { position: absolute; inset: 0; background: rgba(10,58,64,.42);
-  opacity: 0; transition: opacity .35s var(--ease);
-  -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+/* ---------- Nav drawer wrapper ---------- */
+/* Desktop (>=721px): the drawer is a transparent pass-through so the
+   .nav-menu inside it renders as the normal inline horizontal header nav.
+   The scrim is hidden and takes no space. The mobile off-canvas behaviour
+   is layered on top only inside the <=720px block below. */
+.nav-drawer { display: contents; }
+.nav-scrim { display: none; }
+
+@media (max-width: 720px) {
+  .nav-scrim { display: block; position: absolute; inset: 0; background: rgba(10,58,64,.42);
+    opacity: 0; transition: opacity .35s var(--ease);
+    -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+}
 
 @media (max-width: 720px) {
   /* Header sits above the scrim so the toggle stays visible + tappable,
