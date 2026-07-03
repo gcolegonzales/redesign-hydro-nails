@@ -35,12 +35,66 @@
     // full viewport (correct height, no bottom gap).
     document.body.appendChild(drawer);
 
+    var DESKTOP_BP = 720; // must match the CSS breakpoint
     var isOpen = false;
+
+    var isMobile = function () { return window.innerWidth <= DESKTOP_BP; };
+
+    var focusables = function () {
+      return Array.prototype.filter.call(
+        menu.querySelectorAll("a[href], button:not([disabled])"),
+        function (el) { return el.offsetParent !== null || el.getClientRects().length; }
+      );
+    };
+
+    // Keep the closed drawer's off-canvas links out of the tab order + AT.
+    var syncInert = function () {
+      var hidden = !isOpen;
+      if ("inert" in HTMLElement.prototype) { drawer.inert = hidden; }
+      if (hidden) { drawer.setAttribute("aria-hidden", "true"); }
+      else { drawer.removeAttribute("aria-hidden"); }
+    };
+
+    // Mark everything except the drawer inert while the drawer is open.
+    var pageEls = [];
+    var setPageInert = function (on) {
+      if (on) {
+        pageEls = [];
+        Array.prototype.forEach.call(document.body.children, function (el) {
+          if (el === drawer) return;
+          if (el.hasAttribute("aria-hidden") || el.inert) return;
+          pageEls.push(el);
+          if ("inert" in HTMLElement.prototype) el.inert = true;
+          el.setAttribute("data-nav-inert", "");
+        });
+      } else {
+        pageEls.forEach(function (el) {
+          if ("inert" in HTMLElement.prototype) el.inert = false;
+          el.removeAttribute("data-nav-inert");
+        });
+        pageEls = [];
+      }
+    };
+
     var setOpen = function (open) {
       isOpen = open;
       document.body.classList.toggle("nav-open", open);
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      syncInert();
+      if (open) {
+        setPageInert(true);
+        var f = focusables();
+        if (f.length) f[0].focus();
+      } else {
+        setPageInert(false);
+        // Return focus to the toggle only if focus is inside the drawer.
+        if (drawer.contains(document.activeElement) || document.activeElement === document.body) {
+          toggle.focus();
+        }
+      }
     };
+
     toggle.addEventListener("click", function () { setOpen(!isOpen); });
 
     // Close on scrim tap, on any nav link tap, and on Escape.
@@ -48,8 +102,34 @@
       if (e.target.closest("[data-close]") || e.target.tagName === "A") setOpen(false);
     });
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && isOpen) setOpen(false);
+      if (!isOpen) return;
+      if (e.key === "Escape") { setOpen(false); return; }
+      if (e.key === "Tab") {
+        var f = focusables();
+        if (!f.length) { e.preventDefault(); return; }
+        var first = f[0], last = f[f.length - 1], active = document.activeElement;
+        if (e.shiftKey && (active === first || !drawer.contains(active))) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && (active === last || !drawer.contains(active))) {
+          e.preventDefault(); first.focus();
+        }
+      }
     });
+
+    // Reset drawer + toggle state when crossing the desktop breakpoint.
+    var wasMobile = isMobile();
+    window.addEventListener("resize", function () {
+      var m = isMobile();
+      if (m === wasMobile) return;
+      wasMobile = m;
+      if (!m && isOpen) { setOpen(false); }
+      // At desktop widths the drawer isn't used; keep its links out of tab order.
+      if (!m) { isOpen = false; syncInert(); }
+      else { syncInert(); }
+    });
+
+    // Initial state: closed drawer is inert.
+    syncInert();
   }
 
   // Scroll reveal
