@@ -6,38 +6,49 @@
   var y = document.getElementById("year");
   if (y) y.textContent = new Date().getFullYear();
 
-  // Sticky header shrink
+  // Sticky header: shrink + reveal-on-scroll-up
   var header = document.getElementById("siteHeader");
+  var lastY = window.scrollY;
   var onScroll = function () {
-    if (window.scrollY > 24) header.classList.add("scrolled");
+    var y = window.scrollY;
+    if (y > 24) header.classList.add("scrolled");
     else header.classList.remove("scrolled");
+
+    // Reveal on ANY upward scroll; hide when scrolling down past the header.
+    if (y > lastY && y > 90) {
+      header.classList.add("header-hidden");
+    } else if (y < lastY) {
+      header.classList.remove("header-hidden");
+    }
+    lastY = y;
   };
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
-  // Mobile nav
+  // Mobile nav (drawer + scrim live in the HTML now)
   var toggle = document.querySelector(".nav-toggle");
   var menu = document.getElementById("navmenu");
-  if (toggle && menu) {
-    // Scrim
-    var scrim = document.createElement("div");
-    scrim.className = "nav-scrim";
-    document.body.appendChild(scrim);
+  var drawer = document.getElementById("navDrawer");
+  if (toggle && menu && drawer) {
+    // The header uses backdrop-filter, which makes it the containing block for
+    // any fixed descendant. Move the drawer to <body> so inset:0 resolves to the
+    // full viewport (correct height, no bottom gap).
+    document.body.appendChild(drawer);
 
+    var isOpen = false;
     var setOpen = function (open) {
+      isOpen = open;
       document.body.classList.toggle("nav-open", open);
-      menu.classList.toggle("open", open);
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
     };
-    toggle.addEventListener("click", function () {
-      setOpen(!menu.classList.contains("open"));
-    });
-    scrim.addEventListener("click", function () { setOpen(false); });
-    menu.addEventListener("click", function (e) {
-      if (e.target.tagName === "A") setOpen(false);
+    toggle.addEventListener("click", function () { setOpen(!isOpen); });
+
+    // Close on scrim tap, on any nav link tap, and on Escape.
+    drawer.addEventListener("click", function (e) {
+      if (e.target.closest("[data-close]") || e.target.tagName === "A") setOpen(false);
     });
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape" && isOpen) setOpen(false);
     });
   }
 

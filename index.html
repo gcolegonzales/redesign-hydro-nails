@@ -101,18 +101,21 @@
       </span>
     </a>
     <nav class="nav" aria-label="Primary">
-      <button class="nav-toggle" aria-expanded="false" aria-controls="navmenu">
+      <div class="nav-drawer" id="navDrawer">
+        <div class="nav-scrim" data-close></div>
+        <ul class="nav-menu" id="navmenu">
+          <li><a href="#services">Services</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#reviews">Reviews</a></li>
+          <li><a href="#visit">Visit</a></li>
+          <li><a class="nav-cta" href="#book">Request Appointment</a></li>
+        </ul>
+      </div>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="navmenu" aria-label="Menu">
         <span class="bar"></span><span class="bar"></span><span class="bar"></span>
         <span class="sr-only">Menu</span>
       </button>
-      <ul class="nav-menu" id="navmenu">
-        <li><a href="#services">Services</a></li>
-        <li><a href="#gallery">Gallery</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#reviews">Reviews</a></li>
-        <li><a href="#visit">Visit</a></li>
-        <li><a class="nav-cta" href="#book">Request Appointment</a></li>
-      </ul>
     </nav>
   </div>
 </header>
