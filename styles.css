@@ -354,7 +354,8 @@ img { max-width: 100%; display: block; }
     background: var(--cream); box-shadow: var(--shadow-lg);
     padding: 5.2rem 1.3rem 2rem; margin: 0;
     transform: translateX(100%);
-    transition: transform .4s var(--ease);
+    transition: transform .34s var(--ease);
+    will-change: transform; backface-visibility: hidden;
     overflow-y: auto; -webkit-overflow-scrolling: touch;
     -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
   .nav-open .nav-menu { transform: none; }
